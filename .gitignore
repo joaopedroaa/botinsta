@@ -1,4 +1,6 @@
 node_modules
 dist
+browser/*.png
+
 .env
 yarn-error.log

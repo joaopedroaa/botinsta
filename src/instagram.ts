@@ -14,6 +14,7 @@ const spinnerInit = ora("Iniciando").start();
 export async function init(showBrowser: Boolean) {
   const browser = await puppeteer.launch({
     headless: showBrowser ? false : true,
+    args: ["--window-size=375,800"],
   });
 
   const page = await browser.newPage();
@@ -59,7 +60,7 @@ export async function login(
 
   // await page.waitForSelector(selector.login.HOME_SCREEN);
   // await page.tap(selector.login.HOME_SCREEN);
-  setInterval(async () => await page.screenshot({ path: "example.png" }), 3000);
+  setInterval(async () => await page.screenshot({ path: "browser/browser.png" }), 3000);
   spinnerLogin.text = `Logado: ${username}`;
   spinnerLogin.succeed();
   return page;
