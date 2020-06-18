@@ -1,7 +1,9 @@
 import puppeteer from "puppeteer";
-import selector from "./selectors";
 import dotenv from "dotenv";
-const { resolve } = require("path");
+import { resolve } from "path";
+
+import selector from "./selectors";
+import verifyPopUp from "./utils/verifyPopUp";
 const iPhone = puppeteer.devices["iPhone 6"];
 import ora from "ora";
 dotenv.config();
@@ -20,7 +22,13 @@ export async function init(showBrowser: Boolean) {
   const page = await browser.newPage();
   await page.emulate(iPhone);
   spinnerInit.succeed();
-  return page;
+
+  const result = {
+    page,
+    browser,
+  };
+
+  return result;
 }
 
 export async function login(
@@ -38,29 +46,31 @@ export async function login(
 
   await page.goto("https://www.instagram.com/accounts/login/");
 
-  await page.waitForSelector(selector.login.USERNAME);
-  await page.waitForSelector(selector.login.PASSWORD);
-  await page.waitForSelector(selector.login.LOGIN_BUTTON);
-
   spinnerLogin.text = "Login: Carregando username";
+  await page.waitForSelector(selector.login.USERNAME);
   await page.tap(selector.login.USERNAME);
   await page.keyboard.type(username);
 
   spinnerLogin.text = "Login: Carregando password";
+  await page.waitForSelector(selector.login.PASSWORD);
   await page.tap(selector.login.PASSWORD);
   await page.keyboard.type(password);
 
   spinnerLogin.text = "Logando";
+  await page.waitForSelector(selector.login.LOGIN_BUTTON);
   await page.tap(selector.login.LOGIN_BUTTON);
 
   //
-
   await page.waitForSelector(selector.login.LOGIN_SAVE);
   await page.tap(selector.login.LOGIN_SAVE);
 
   // await page.waitForSelector(selector.login.HOME_SCREEN);
   // await page.tap(selector.login.HOME_SCREEN);
-  setInterval(async () => await page.screenshot({ path: "browser/browser.png" }), 3000);
+  setInterval(
+    async () => await page.screenshot({ path: "browser/browser.png" }),
+    3000
+  );
+
   spinnerLogin.text = `Logado: ${username}`;
   spinnerLogin.succeed();
   return page;
@@ -72,16 +82,11 @@ export async function post(
   description: string
 ) {
   const spinnerPost = ora("Iniciando post").start();
-  spinnerPost.text = "Verificando Pop-up";
 
   await page.waitForSelector(selector.post.POST_BUTTON);
 
-  try {
-    await page.waitForSelector(selector.post.TURN_ON_NOTIFICATION, {
-      timeout: 3000,
-    });
-    await page.tap(selector.post.TURN_ON_NOTIFICATION);
-  } catch (error) {}
+  spinnerPost.text = "Verificando Pop-up";
+  await verifyPopUp(page);
 
   spinnerPost.text = "Escolhendo imagem";
   const [fileChooser] = await Promise.all([
@@ -92,8 +97,14 @@ export async function post(
   await fileChooser.accept([resolve("images", image)]);
   spinnerPost.text = "Postando imagem";
 
-  await page.waitForSelector(selector.post.POST_NEXT);
-  await page.tap(selector.post.POST_NEXT);
+  try {
+    await page.waitForSelector(selector.post.POST_NEXT, {
+      timeout: 3000,
+    });
+    await page.tap(selector.post.POST_NEXT);
+  } catch (error) {
+    spinnerPost.fail();
+  }
 
   await page.waitForSelector(selector.post.POST_DESCRIPTION);
   await page.tap(selector.post.POST_DESCRIPTION);
@@ -106,6 +117,6 @@ export async function post(
 
   await page.screenshot({ path: "browser/post-successful.png" });
 
-  spinnerPost.text = "Imagem postada :)";
+  spinnerPost.text = `Imagem postada (${image})`;
   spinnerPost.succeed();
 }

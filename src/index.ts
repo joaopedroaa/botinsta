@@ -1,28 +1,36 @@
 import { init, login, post } from "./instagram";
+import puppeteer from "puppeteer";
+const postData = [
+  {
+    image: "image1.png",
+    description: "post feito ",
+  },
+  {
+    image: "image2.jpg",
+    description: "post feito 100% ",
+  },
+  {
+    image: "image3.jpg",
+    description: "post feito 100% por um bot :)",
+  },
+];
 
-const postData1 = {
-  image: "image1.png",
-  description: "post feito ",
-};
-// const postData2 = {
-//   image: "image2.jpg",
-//   description: "post feito 100% ",
-// };
-// const postData3 = {
-//   image: "image3.jpg",
-//   description: "post feito 100% por um bot :)",
-// };
+interface login {
+  initPage: puppeteer.Page;
+}
 
 (async () => {
-  const initCache = await init(true);
+  const { page: initPage, browser } = await init(true);
 
-  const loginCache = await login(
-    initCache,
+  const loginPage = await login(
+    initPage,
     process.env.USERNAME,
     process.env.PASSWORD
   );
 
-  await post(loginCache, postData1.image, postData1.description);
-  // await post(loginCache, postData2.image, postData3.description);
-  // await post(loginCache, postData3.image, postData2.description);
+  for (const data of postData) {
+    await post(loginPage, data.image, data.description);
+  }
+
+  await browser.close();
 })();
