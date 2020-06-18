@@ -1,25 +1,20 @@
 import { init, login, post } from "./instagram";
+import { getRedditPosts } from "./reddit";
 import puppeteer from "puppeteer";
+
 const postData = [
   {
     image: "image1.png",
-    description: "post feito ",
-  },
-  {
-    image: "image2.jpg",
-    description: "post feito 100% ",
-  },
-  {
-    image: "image3.jpg",
-    description: "post feito 100% por um bot :)",
+    description: "Teste",
   },
 ];
 
-interface login {
-  initPage: puppeteer.Page;
-}
+// const getRedditPost = async (initial: number, final: number): Array => {
+//   const posts = await getRedditPosts();
+//   return posts.slice(initial, final);
+// };
 
-(async () => {
+async function app() {
   const { page: initPage, browser } = await init(true);
 
   const loginPage = await login(
@@ -29,8 +24,10 @@ interface login {
   );
 
   for (const data of postData) {
-    await post(loginPage, data.image, data.description);
+    await post(loginPage, data.image, data.title);
   }
 
   await browser.close();
-})();
+}
+
+app();
