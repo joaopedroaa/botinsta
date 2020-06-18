@@ -58,7 +58,7 @@ export async function login(
   return page;
 }
 
-export async function post(page: puppeteer.Page, image: string) {
+export async function post(page: puppeteer.Page, image: string, description: string) {
   await page.waitFor(selector.post.POST_BUTTON);
 
   console.log('Escolhendo imagem')
@@ -68,4 +68,16 @@ export async function post(page: puppeteer.Page, image: string) {
   ]);
   await fileChooser.accept([resolve("static", "images", image)]);
   console.log('imagem escolhida')
+
+
+  await page.waitFor(selector.post.POST_NEXT);
+  await page.tap(selector.post.POST_NEXT);
+  
+  await page.waitFor(selector.post.POST_DESCRIPTION);
+  await page.tap(selector.post.POST_DESCRIPTION);
+  await page.keyboard.type(description);
+  
+  await page.waitFor(selector.post.POST_SHARE);
+  await page.tap(selector.post.POST_SHARE);
+  
 }

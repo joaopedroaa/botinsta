@@ -7,7 +7,7 @@ async function exec() {
     process.env.USERNAME,
     process.env.PASSWORD
   );
-  const postCache = await post(loginCache, "image.jpg");
+  const postCache = await post(loginCache, "image.jpg", "teste");
 }
 
 exec();
