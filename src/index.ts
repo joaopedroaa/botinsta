@@ -1,3 +1,9 @@
-import { login } from "./instagram";
+import { init,login, post } from "./instagram";
 
-login(process.env.USERNAME, process.env.PASSWORD);
+async function exec() {
+  const initCache = await init(true)
+  const loginCache = await login(initCache,process.env.USERNAME, process.env.PASSWORD);
+  const postCache = await post(loginCache);
+}
+
+exec();
