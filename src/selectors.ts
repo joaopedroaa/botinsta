@@ -12,6 +12,7 @@ export default {
     POST_NEXT: "div.Scmby > header > div > div.mXkkY.KDuQp > button",
     POST_DESCRIPTION: "div.A9bvI > section.IpSxo > div.NfvXc > textarea",
     POST_SHARE: "div.Scmby > header > div > div.mXkkY.KDuQp > button",
+    TURN_ON_NOTIFICATION: "div > div.mt3GC > button.aOOlW.HoLwm",
   },
 
   // login: "_2hvTZ.pexuQ.zyHYP",
