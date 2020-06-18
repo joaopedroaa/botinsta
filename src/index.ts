@@ -1,3 +1,4 @@
-import { login } from "./instagram";
+import Instagram from "./instagram";
 
-login(process.env.USERNAME, process.env.PASSWORD);
+Instagram.login(process.env.USERNAME, process.env.PASSWORD)
+

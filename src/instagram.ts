@@ -1,53 +1,70 @@
 import puppeteer from "puppeteer";
-// import fs from "fs";
-// import config from "./config";
-// import selectors from "./selectors";
 import dotenv from "dotenv";
 const iPhone = puppeteer.devices["iPhone 6"];
 dotenv.config();
+// import fs from "fs";
+// import config from "./config";
+// import selectors from "./selectors";
 
-export async function login(username?: string, password?: string) {
-  if (!username || !password) {
-    throw new Error("Invalid name or password");
+interface instagram {
+  browser: Promise<puppeteer.Browser>;
+  page: Promise<puppeteer.Page>;
+}
+
+class instagram implements instagram {
+  constructor() {
+    this.init();
   }
 
-  const loginSelector = {
-    USERNAME: '[name="username"]',
-    PASSWORD: '[name="password"]',
-    LOGIN_BUTTON: "button.sqdOP.L3NKy.y3zKF > div.Igw0E.IwRSH.eGOV_._4EzTm",
-    LOGIN_SAVE: "div.cmbtv > button.sqdOP.yWX7d.y3zKF",
-    HOME_SCREEN: "div.mt3GC > button.aOOlW.HoLwm",
-  };
+  async init() {
+    this.browser = puppeteer.launch({ headless: false });
+    this.page = (await this.browser).newPage();
+    (await this.page).emulate(iPhone);
+  }
 
-  // Initialized Bot
-  const browser = await puppeteer.launch({
-    headless: false,
-  });
-  const page = await browser.newPage();
-  await page.emulate(iPhone);
-  //
+  async login(username?: string, password?: string) {
+    if (!username || !password) {
+      throw new Error("Invalid name or password");
+    }
 
-  await page.goto("https://www.instagram.com/accounts/login/");
+    const loginSelector = {
+      USERNAME: '[name="username"]',
+      PASSWORD: '[name="password"]',
+      LOGIN_BUTTON: "button.sqdOP.L3NKy.y3zKF > div.Igw0E.IwRSH.eGOV_._4EzTm",
+      LOGIN_SAVE: "div.cmbtv > button.sqdOP.yWX7d.y3zKF",
+      HOME_SCREEN: "div.mt3GC > button.aOOlW.HoLwm",
+    };
 
-  await page.waitFor(loginSelector.USERNAME);
-  await page.waitFor(loginSelector.PASSWORD);
+    (await this.page).goto("https://www.instagram.com/accounts/login/");
 
-  await page.tap(loginSelector.USERNAME);
-  await page.keyboard.type(username);
+    (await this.page).waitFor(loginSelector.USERNAME);
+    (await this.page).waitFor(loginSelector.PASSWORD);
 
-  await page.tap(loginSelector.PASSWORD);
-  await page.keyboard.type(password);
+    (await this.page).tap(loginSelector.USERNAME);
+    (await this.page).keyboard.type(username);
 
-  await page.tap(loginSelector.LOGIN_BUTTON);
+    (await this.page).tap(loginSelector.PASSWORD);
+    (await this.page).keyboard.type(password);
 
-  await page.waitFor(loginSelector.LOGIN_SAVE);
-  await page.tap(loginSelector.LOGIN_SAVE);
+    (await this.page).tap(loginSelector.LOGIN_BUTTON);
 
-  await page.waitFor(loginSelector.HOME_SCREEN);
-  await page.tap(loginSelector.HOME_SCREEN);
+    (await this.page).waitFor(loginSelector.LOGIN_SAVE);
+    (await this.page).tap(loginSelector.LOGIN_SAVE);
 
-  console.log(`Logado: ${username}`);
+    (await this.page).waitFor(loginSelector.HOME_SCREEN);
+    (await this.page).tap(loginSelector.HOME_SCREEN);
+
+    console.log(`Logado: ${username}`);
+  }
+
+  async post() {
+    const postSelector = {
+      POST_BUTTON: "div.q02Nz._0TPg > svg",
+    };
+  }
 }
+
+export default new instagram();
 
 // async function loadCookies(page) {
 //   const cookiesPath = "cookies.txt";
