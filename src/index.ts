@@ -1,13 +1,14 @@
 import { init, login, post } from "./instagram";
-import { getRedditPosts } from "./reddit";
-import puppeteer from "puppeteer";
+// import { getRedditPosts } from "./reddit";
+// import puppeteer from "puppeteer";
 
 const postData = [
   {
-    image: "image1.png",
-    description: "Teste",
+    image: "cat.jpg",
+    description: "Funciona hahaha",
   },
 ];
+
 
 // const getRedditPost = async (initial: number, final: number): Array => {
 //   const posts = await getRedditPosts();
@@ -24,7 +25,7 @@ async function app() {
   );
 
   for (const data of postData) {
-    await post(loginPage, data.image, data.title);
+    await post(loginPage, data.image, data.description);
   }
 
   await browser.close();
